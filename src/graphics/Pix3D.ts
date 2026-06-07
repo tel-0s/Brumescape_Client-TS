@@ -4,6 +4,12 @@ import Pix8 from '#/graphics/Pix8.js';
 import Jagfile from '#/io/Jagfile.js';
 import { Int32Array2d, TypedArray1d } from '#/util/Arrays.js';
 
+// Texture id capacity. Base content uses 0..49; mods inject custom textures at
+// 50+. The texture arrays/loops below are sized to this (raised from the
+// original 50 to make room for mod textures). Must match no engine constant —
+// the engine packs as many textures as exist and the unpack loop tolerates gaps.
+const MAX_TEXTURES = 256;
+
 // noinspection JSSuspiciousNameCombination,DuplicatedCode
 export default class Pix3D extends Pix2D {
     static lowMemory: boolean = false;
@@ -14,7 +20,7 @@ export default class Pix3D extends Pix2D {
     static cosTable: Int32Array = new Int32Array(2048);
     static colourTable: Int32Array = new Int32Array(65536);
 
-    static textures: (Pix8 | null)[] = new TypedArray1d(50, null);
+    static textures: (Pix8 | null)[] = new TypedArray1d(MAX_TEXTURES, null);
     static textureCount: number = 0;
 
     static lineOffset: Int32Array = new Int32Array();
@@ -26,15 +32,15 @@ export default class Pix3D extends Pix2D {
     static alpha: number = 0;
 
     static texelPool: (Int32Array | null)[] | null = null;
-    static activeTexels: (Int32Array | null)[] = new TypedArray1d(50, null);
+    static activeTexels: (Int32Array | null)[] = new TypedArray1d(MAX_TEXTURES, null);
     static poolSize: number = 0;
     static cycle: number = 0;
-    static textureCycle: Int32Array = new Int32Array(50);
-    static texPal: (Int32Array | null)[] = new TypedArray1d(50, null);
+    static textureCycle: Int32Array = new Int32Array(MAX_TEXTURES);
+    static texPal: (Int32Array | null)[] = new TypedArray1d(MAX_TEXTURES, null);
 
     private static opaque: boolean = false;
-    private static textureTranslucent: boolean[] = new TypedArray1d(50, false);
-    private static averageTextureRgb: Int32Array = new Int32Array(50);
+    private static textureTranslucent: boolean[] = new TypedArray1d(MAX_TEXTURES, false);
+    private static averageTextureRgb: Int32Array = new Int32Array(MAX_TEXTURES);
 
     static {
         for (let i: number = 1; i < 512; i++) {
@@ -79,7 +85,7 @@ export default class Pix3D extends Pix2D {
     static unpackTextures(textures: Jagfile): void {
         this.textureCount = 0;
 
-        for (let i: number = 0; i < 50; i++) {
+        for (let i: number = 0; i < MAX_TEXTURES; i++) {
             try {
                 this.textures[i] = Pix8.fromArchive(textures, i.toString());
                 if (this.lowMemory && this.textures[i]?.cropW === 128) {
@@ -185,7 +191,7 @@ export default class Pix3D extends Pix2D {
                 this.colourTable[offset++] = this.gammaCorrect(rgb, randomBrightness);
             }
         }
-        for (let id: number = 0; id < 50; id++) {
+        for (let id: number = 0; id < MAX_TEXTURES; id++) {
             const texture: Pix8 | null = this.textures[id];
             if (!texture) {
                 continue;
@@ -201,7 +207,7 @@ export default class Pix3D extends Pix2D {
             }
         }
 
-        for (let id: number = 0; id < 50; id++) {
+        for (let id: number = 0; id < MAX_TEXTURES; id++) {
             this.pushTexture(id);
         }
     }
