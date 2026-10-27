@@ -204,8 +204,10 @@ export class Client extends GameShell {
     private imageMinimap: Pix32 | null = null;
     private imageCompass: Pix32 | null = null;
     private imageMapedge: Pix32 | null = null;
-    private imageMapscene: (Pix8 | null)[] = new TypedArray1d(50, null);
-    private imageMapfunction: (Pix32 | null)[] = new TypedArray1d(50, null);
+    // Brumescape: 256 (was 50) so mods can replace mapscene/mapfunction with
+    // larger sheets. Loading stops at the first missing tile.
+    private imageMapscene: (Pix8 | null)[] = new TypedArray1d(256, null);
+    private imageMapfunction: (Pix32 | null)[] = new TypedArray1d(256, null);
     private imageHitmarks: (Pix32 | null)[] = new TypedArray1d(20, null);
     private imageHeadicon: (Pix32 | null)[] = new TypedArray1d(20, null);
     private imageMapmarker0: Pix32 | null = null;
@@ -765,7 +767,7 @@ export class Client extends GameShell {
             this.imageMapedge.crop();
 
             try {
-                for (let i: number = 0; i < 50; i++) {
+                for (let i: number = 0; i < this.imageMapscene.length; i++) {
                     this.imageMapscene[i] = Pix8.fromArchive(jagMedia, 'mapscene', i);
                 }
             } catch (e) {
@@ -773,7 +775,7 @@ export class Client extends GameShell {
             }
 
             try {
-                for (let i: number = 0; i < 50; i++) {
+                for (let i: number = 0; i < this.imageMapfunction.length; i++) {
                     this.imageMapfunction[i] = Pix32.fromArchive(jagMedia, 'mapfunction', i);
                 }
             } catch (e) {
@@ -883,7 +885,7 @@ export class Client extends GameShell {
             const randB: number = ((Math.random() * 21.0) | 0) - 10;
             const rand: number = ((Math.random() * 41.0) | 0) - 20;
 
-            for (let i: number = 0; i < 50; i++) {
+            for (let i: number = 0; i < this.imageMapfunction.length; i++) {
                 if (this.imageMapfunction[i]) {
                     this.imageMapfunction[i]?.translate2d(randR + rand, randG + rand, randB + rand);
                 }

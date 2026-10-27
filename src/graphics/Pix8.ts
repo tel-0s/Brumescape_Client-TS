@@ -53,7 +53,11 @@ export default class Pix8 extends DoublyLinkable {
             index.pos += 1;
         }
 
-        if (dat.pos > dat.length || index.pos > index.length) {
+        // Brumescape: >= on dat (was >): every tile has at least one pixel, so
+        // a read that starts at the end of the pixel data is past the last
+        // tile. This stops tile loops (mapfunction, mapscene, ...) cleanly at
+        // the real tile count instead of decoding index bytes as a sprite.
+        if (dat.pos >= dat.length || index.pos > index.length) {
             throw new Error();
         }
 
