@@ -6,8 +6,11 @@ import Tone from '#/sound/Tone.js';
 import { TypedArray1d } from '#/util/Arrays.js';
 
 export default class Wave {
-    private static readonly tracks: (Wave | null)[] = new TypedArray1d(1000, null);
-    static readonly delays: Int32Array = new Int32Array(1000);
+    // Sound ids are 16 bit (65535 ends sounds.dat). The original client sized these
+    // for 1000 sounds; mods add sounds after the ~580 base ones, and a delay
+    // looked up past the end of the Int32Array would be undefined (NaN timing).
+    private static readonly tracks: (Wave | null)[] = new TypedArray1d(65535, null);
+    static readonly delays: Int32Array = new Int32Array(65535);
     static waveBytes: Uint8Array = new Uint8Array(44100 * 10);
     static waveBuffer: Packet | null = null;
     private readonly tones: (Tone | null)[] = new TypedArray1d(10, null);
