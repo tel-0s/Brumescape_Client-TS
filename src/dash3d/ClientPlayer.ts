@@ -400,7 +400,7 @@ export default class ClientPlayer extends ClientEntity {
             }
 
             if (this.secondarySeqId >= 0 && this.secondarySeqId !== this.readyanim) {
-                const secondFrames: Int16Array | null = SeqType.types[this.secondarySeqId].frames;
+                const secondFrames: Int32Array | null = SeqType.types[this.secondarySeqId].frames;
                 if (secondFrames) {
                     secondaryTransformId = secondFrames[this.secondarySeqFrame];
                 }
@@ -416,7 +416,7 @@ export default class ClientPlayer extends ClientEntity {
                 hash += BigInt(rightHandValue - this.appearance[3]) << 48n;
             }
         } else if (this.secondarySeqId >= 0) {
-            const secondFrames: Int16Array | null = SeqType.types[this.secondarySeqId].frames;
+            const secondFrames: Int32Array | null = SeqType.types[this.secondarySeqId].frames;
             if (secondFrames) {
                 primaryTransformId = secondFrames[this.secondarySeqFrame];
             }

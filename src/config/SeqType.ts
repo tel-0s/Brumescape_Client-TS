@@ -27,9 +27,11 @@ export default class SeqType extends ConfigType {
     static types: SeqType[] = [];
 
     frameCount: number = 0;
-    frames: Int16Array | null = null;
-    iframes: Int16Array | null = null;
-    delay: Int16Array | null = null;
+    // Int32Array, not Int16Array: frame ids are unsigned 16-bit, and mod
+    // animations get ids after the base frames, so ids above 32767 must not wrap.
+    frames: Int32Array | null = null;
+    iframes: Int32Array | null = null;
+    delay: Int32Array | null = null;
     loops: number = -1;
     walkmerge: Int32Array | null = null;
     stretches: boolean = false;
@@ -73,13 +75,13 @@ export default class SeqType extends ConfigType {
             if (seq.frameCount === 0) {
                 seq.frameCount = 1;
 
-                seq.frames = new Int16Array(1);
+                seq.frames = new Int32Array(1);
                 seq.frames[0] = -1;
 
-                seq.iframes = new Int16Array(1);
+                seq.iframes = new Int32Array(1);
                 seq.iframes[0] = -1;
 
-                seq.delay = new Int16Array(1);
+                seq.delay = new Int32Array(1);
                 seq.delay[0] = -1;
             }
         }
@@ -109,9 +111,9 @@ export default class SeqType extends ConfigType {
     unpack(code: number, dat: Packet): void {
         if (code === 1) {
             this.frameCount = dat.g1();
-            this.frames = new Int16Array(this.frameCount);
-            this.iframes = new Int16Array(this.frameCount);
-            this.delay = new Int16Array(this.frameCount);
+            this.frames = new Int32Array(this.frameCount);
+            this.iframes = new Int32Array(this.frameCount);
+            this.delay = new Int32Array(this.frameCount);
 
             for (let i: number = 0; i < this.frameCount; i++) {
                 this.frames[i] = dat.g2();
