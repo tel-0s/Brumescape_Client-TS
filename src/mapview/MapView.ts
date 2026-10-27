@@ -235,7 +235,8 @@ export class MapView extends GameShell {
         this.readNpcData(npcData);
 
         try {
-            for (let i: number = 0; i < 50; i++) {
+            // Brumescape: up to 256 tiles (was 50), matching the client minimap
+            for (let i: number = 0; i < 256; i++) {
                 this.imageMapscene[i] = Pix8.fromArchive(worldmap, 'mapscene', i);
             }
         } catch (ignore) {
@@ -243,7 +244,7 @@ export class MapView extends GameShell {
         }
 
         try {
-            for (let i: number = 0; i < 50; i++) {
+            for (let i: number = 0; i < 256; i++) {
                 this.imageMapfunction[i] = Pix32.fromArchive(worldmap, 'mapfunction', i);
             }
         } catch (ignore) {
